@@ -1,0 +1,211 @@
+
+robot.out:     file format elf32-littlearm
+robot.out
+architecture: arm, flags 0x00000112:
+EXEC_P, HAS_SYMS, D_PAGED
+start address 0x00000000
+
+Program Header:
+    LOAD off    0x00008000 vaddr 0x00000000 paddr 0x00000000 align 2**15
+         filesz 0x000051a6 memsz 0x000051a6 flags r-x
+    LOAD off    0x00010200 vaddr 0x40000200 paddr 0x000051a6 align 2**15
+         filesz 0x00000000 memsz 0x00001eb0 flags rw-
+private flags = 5000000: [Version5 EABI]
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000051a6  00000000  00000000  00008000  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .bss          00001eb0  40000200  000051a6  00010200  2**2
+                  ALLOC
+  2 .ARM.attributes 0000002c  00000000  00000000  0000d1a6  2**0
+                  CONTENTS, READONLY
+  3 .comment      00000183  00000000  00000000  0000d1d2  2**0
+                  CONTENTS, READONLY
+  4 .debug_abbrev 00000995  00000000  00000000  0000d355  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   0000273c  00000000  00000000  0000dcea  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_line   00000819  00000000  00000000  00010426  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_frame  0000080c  00000000  00000000  00010c40  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_loc    00000c30  00000000  00000000  0001144c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_pubnames 0000056f  00000000  00000000  0001207c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_aranges 00000120  00000000  00000000  000125eb  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_str    00000de4  00000000  00000000  0001270b  2**0
+                  CONTENTS, READONLY, DEBUGGING
+SYMBOL TABLE:
+00000000 l    d  .text	00000000 .text
+40000200 l    d  .bss	00000000 .bss
+00000000 l    d  .ARM.attributes	00000000 .ARM.attributes
+00000000 l    d  .comment	00000000 .comment
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .debug_loc	00000000 .debug_loc
+00000000 l    d  .debug_pubnames	00000000 .debug_pubnames
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .debug_str	00000000 .debug_str
+00000004 l       *ABS*	00000000 UND_STACK_SIZE
+00000004 l       *ABS*	00000000 ABT_STACK_SIZE
+00000004 l       *ABS*	00000000 FIQ_STACK_SIZE
+00000100 l       *ABS*	00000000 IRQ_STACK_SIZE
+00000100 l       *ABS*	00000000 SVC_STACK_SIZE
+00000010 l       *ABS*	00000000 MODE_USR
+00000011 l       *ABS*	00000000 MODE_FIQ
+00000012 l       *ABS*	00000000 MODE_IRQ
+00000013 l       *ABS*	00000000 MODE_SVC
+00000017 l       *ABS*	00000000 MODE_ABT
+0000001b l       *ABS*	00000000 MODE_UND
+0000001f l       *ABS*	00000000 MODE_SYS
+00000080 l       *ABS*	00000000 I_BIT
+00000040 l       *ABS*	00000000 F_BIT
+00000000 l       .text	00000000 _vectors
+00000020 l       .text	00000000 Reset_Addr
+00000024 l       .text	00000000 Undef_Addr
+00000028 l       .text	00000000 SWI_Addr
+0000002c l       .text	00000000 PAbt_Addr
+00000030 l       .text	00000000 DAbt_Addr
+00000034 l       .text	00000000 IRQ_Addr
+00000038 l       .text	00000000 FIQ_Addr
+00000290 l       .text	00000000 UNDEF_Routine
+0000028c l       .text	00000000 mainLoop
+00000000 l    df *ABS*	00000000 System.c
+00000000 l    df *ABS*	00000000 timer.c
+00000000 l    df *ABS*	00000000 ENC28J60.c
+0000106c l     F .text	00000044 enc_resetMac
+00001ba8 l     F .text	00000068 enc_bankSel
+00001850 l     F .text	0000009c enc_writeCtrlReg
+00001a64 l     F .text	000000a0 enc_setBitField
+000016f4 l     F .text	0000009c enc_writePhyReg
+00001968 l     F .text	000000fc enc_writeMacBuffer
+00001b04 l     F .text	000000a4 enc_clrBitField
+000018ec l     F .text	0000007c enc_readMacBuffer
+40000254 l       .bss	00000000 nextpckptr.1513
+00001660 l     F .text	00000094 enc_readMacReg
+00001790 l     F .text	000000c0 enc_readPhyReg
+00000000 l    df *ABS*	00000000 spi.c
+00000000 l    df *ABS*	00000000 ethernet.c
+00000000 l    df *ABS*	00000000 limNet.c
+000051a0 l     O .text	00000006 C.41.1572
+00000000 l    df *ABS*	00000000 tmp102.c
+00000000 l    df *ABS*	00000000 i2c.c
+7ffffff1 l       *ABS*	00000000 IAP_ENTRY
+00000000 l    df *ABS*	00000000 pwm.c
+00000000 l    df *ABS*	00000000 memcpy.c
+400019f0 g     O .bss	00000024 ARPFrame
+00002868 g     F .text	00000020 getETHSourceMAC
+00003bc8 g     F .text	000000ac limNet_postData
+000007d8 g     F .text	00000298 initENC28J60
+000038ec g     F .text	00000020 returnRXFramePointer
+00000f44 g     F .text	00000094 startTimer
+00002964 g     F .text	0000004c isIPFrame
+00004e54 g     F .text	00000160 __divsf3
+00000e98 g     F .text	000000ac initTimer1
+000028e8 g     F .text	00000020 getIPSourceIP
+000010b0 g     F .text	00000158 enc_initialise
+40000256 g     O .bss	00000008 TxStatus
+000015e0 g     F .text	00000080 enc_readEthReg
+000051a6 g       .text	00000000 _etext
+00004a1c g     F .text	000001bc __aeabi_fadd
+000028a8 g     F .text	00000020 getARPSourceMAC
+00004a18 g     F .text	000001c0 __subsf3
+00004004 g     F .text	00000390 I2CreadRegister
+00001f0c g     F .text	000000ec calcCRC
+00003e74 g     F .text	00000034 TMP102_Read
+0000030c g     F .text	000001dc initialise
+00004fb4 g     F .text	000001ec memcpy
+000029b0 g     F .text	000002c8 sendICMPResponse
+00003df4 g     F .text	00000080 limNet_postunsignedint
+00004be0 g     F .text	00000020 __aeabi_i2f
+40000200 g       .bss	00000000 _bss_start
+00000294 g       .text	00000000 SWI_Routine
+00003f74 g     F .text	00000038 writeI2CStop
+0000071c g     F .text	00000054 setupGPIO
+4000024c g     O .bss	00000004 ptr
+40000200 g     O .bss	00000014 command
+00000674 g     F .text	000000a8 initPher
+00002908 g     F .text	0000005c isARPFrame
+00001c10 g     F .text	00000050 enc_selMac
+00002414 g     F .text	00000198 sendARP
+000025ac g     F .text	000001cc respondToARP
+00000000 g       .text	00000000 _startup
+40001b34 g     O .bss	0000057c message
+00003f3c g     F .text	00000038 writeI2CStart
+00002c78 g     F .text	00000078 checkDestIP
+00002cf0 g     F .text	00000190 checkDestMAC
+400020b0 g       *ABS*	00000000 _bss_end
+000043ac g       .text	00000000 jump_to_IAP
+00004a18 g     F .text	000001c0 __aeabi_fsub
+00000200 g       .text	00000000 Reset_Handler
+00004c10 g     F .text	000000ac __floatdisf
+000002dc g       .text	00000000 FIQ_Routine
+40001a1c g     O .bss	0000004c IPFrame
+00004394 g       .text	00000000 IAPRead
+00001cd8 g     F .text	00000024 enc_getStatus
+00001eac g     F .text	00000060 wait
+40000260 g     O .bss	00000bc8 txETHFrame
+000028c8 g     F .text	00000020 getARPSourceIP
+00004be0 g     F .text	00000020 __floatsisf
+40000250 g     O .bss	00000004 busyFlag
+00000770 g     F .text	00000068 initVICVect
+00003d74 g     F .text	00000080 limNet_postlong
+00003ff0 g     F .text	00000014 waitForComplete
+000004e8 g     F .text	0000018c initClock
+00001dfc g     F .text	000000b0 spi_read
+00001cfc g     F .text	00000078 spi_initialize
+00004e54 g     F .text	00000160 __aeabi_fdiv
+00004c00 g     F .text	000000bc __floatundisf
+00000a70 g     F .text	00000324 tick
+00004bd8 g     F .text	00000028 __aeabi_ui2f
+40001a68 g     O .bss	000000c8 arpTable
+00003c74 g     F .text	00000080 limNet_postfloat
+00003580 g     F .text	0000036c sendUDPFrame
+00004c10 g     F .text	000000ac __aeabi_l2f
+00001208 g     F .text	00000254 enc_write
+00002e80 g     F .text	00000460 processFrame
+00002804 g     F .text	00000064 swapByte
+40003edc g       *ABS*	00000000 _stack_end
+00004c00 g     F .text	000000bc __aeabi_ul2f
+000043b4 g     F .text	00000548 pwm_initialize
+00004cbc g     F .text	00000198 __mulsf3
+0000390c g     F .text	000002bc limNet_initialize
+40001b30 g     O .bss	00000004 limNetData
+00000fd8 g     F .text	00000094 stopTimer
+00001ff8 g     F .text	0000041c initializeFrame
+40000214 g     O .bss	00000008 result
+00004a10 g     F .text	000001c8 __aeabi_frsub
+40000220 g     O .bss	0000002a frame
+00000298 g       .text	00000000 IRQ_Routine
+00004cbc g     F .text	00000198 __aeabi_fmul
+0000145c g     F .text	00000184 enc_read
+00003cf4 g     F .text	00000080 limNet_postint
+00000dec g     F .text	000000ac initTimer0
+40000200 g       .bss	00000000 _data
+00002778 g     F .text	0000008c swapBytes
+00001d74 g     F .text	00000088 spi_write
+40000200 g       .bss	00000000 _edata
+400020b0 g       *ABS*	00000000 _end
+00004968 g     F .text	000000a8 pwm_initialiseMasterTimer
+00004944 g     F .text	00000024 pwm_reset
+00003fac g     F .text	00000044 writeI2C
+0000352c g     F .text	00000054 ackFrame
+00004bd8 g     F .text	00000028 __floatunsisf
+00000d94 g     F .text	00000058 checkETH
+00002888 g     F .text	00000020 getETHDestMAC
+000048fc g     F .text	00000024 pwm_enable
+000032e0 g     F .text	0000024c sendARPFrame
+4000021c g     O .bss	00000004 fact
+40000e28 g     O .bss	00000bc8 rxETHFrame
+40001a14 g     O .bss	00000008 ETHFrameHeader
+00004920 g     F .text	00000024 pwm_disable
+00001c60 g     F .text	00000078 ethernetBroadcast
+00004a1c g     F .text	000001bc __addsf3
+00003ea8 g     F .text	00000094 initI2C
+
+

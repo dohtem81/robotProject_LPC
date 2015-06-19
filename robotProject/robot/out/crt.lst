@@ -1,0 +1,257 @@
+ARM GAS  ../source/crt.s 			page 1
+
+
+   1              	/* ************************************************************************************************
+   2              	
+   3              		crt.s						STARTUP  ASSEMBLY  CODE 
+   4              									-----------------------
+   5              	
+   6              	
+   7              		Module includes the interrupt vectors and start-up code.
+   8              	
+   9              	  *************************************************************************************************
+  10              	
+  11              	/* Stack Sizes */
+  12              	.set  UND_STACK_SIZE, 0x00000004		/* stack for "undefined instruction" interrupts is 4 bytes  */
+  13              	.set  ABT_STACK_SIZE, 0x00000004		/* stack for "abort" interrupts is 4 bytes                  */
+  14              	.set  FIQ_STACK_SIZE, 0x00000004		/* stack for "FIQ" interrupts  is 4 bytes         			*/
+  15              	.set  IRQ_STACK_SIZE, 0X00000100		/* stack for "IRQ" normal interrupts is 4 bytes    			*/
+  16              	.set  SVC_STACK_SIZE, 0x00000100		/* stack for "SVC" supervisor mode is 4 bytes  				*/
+  17              	
+  18              	
+  19              	
+  20              	/* Standard definitions of Mode bits and Interrupt (I & F) flags in PSRs (program status registers)
+  21              	.set  MODE_USR, 0x10            		/* Normal User Mode 										*/
+  22              	.set  MODE_FIQ, 0x11            		/* FIQ Processing Fast Interrupts Mode 						*/
+  23              	.set  MODE_IRQ, 0x12            		/* IRQ Processing Standard Interrupts Mode 					*/
+  24              	.set  MODE_SVC, 0x13            		/* Supervisor Processing Software Interrupts Mode 			*/
+  25              	.set  MODE_ABT, 0x17            		/* Abort Processing memory Faults Mode 						*/
+  26              	.set  MODE_UND, 0x1B            		/* Undefined Processing Undefined Instructions Mode 		*/
+  27              	.set  MODE_SYS, 0x1F            		/* System Running Priviledged Operating System Tasks  Mode	*/
+  28              	
+  29              	.set  I_BIT, 0x80               		/* when I bit is set, IRQ is disabled (program status registers) 
+  30              	.set  F_BIT, 0x40               		/* when F bit is set, FIQ is disabled (program status registers) 
+  31              	
+  32              	
+  33              	/* Set some addresses in memory */
+  34              	
+  35              	#.extern initialise
+  36              	#.extern LEDOnTask
+  37              	#.extern LEDOffTask
+  38              	#.extern ping
+  39              	.extern tick
+  40              	
+  41              	.text
+  42              	.arm
+  43              	
+  44              	#.global mainLoop
+  45              	#.global mainLoop2
+  46              	.global IRQ_Routine
+  47              	.global FIQ_Routine
+  48              	.global SWI_Routine
+  49              	.global	Reset_Handler
+  50              	.global _startup
+  51              	#.func   _startup
+  52              	
+  53              	
+  54              	_startup:
+  55              	
+  56              	# Exception Vectors
+  57              	
+ARM GAS  ../source/crt.s 			page 2
+
+
+  58 0000 18F09FE5 	_vectors:       ldr     PC, Reset_Addr         
+  59 0004 18F09FE5 	                ldr     PC, Undef_Addr
+  60 0008 18F09FE5 	                ldr     PC, SWI_Addr
+  61 000c 18F09FE5 	                ldr     PC, PAbt_Addr
+  62 0010 18F09FE5 	                ldr     PC, DAbt_Addr
+  63 0014 0000A0E1 	                nop							/* Reserved Vector (holds Philips ISP checksum) */
+  64              	#                ldr     PC, [PC,#-0xFF0]	/* see page 71 of "Insiders Guide to the Philips ARM7-Bas
+  65 0018 14F09FE5 					ldr		PC, IRQ_Addr
+  66 001c 14F09FE5 	                ldr     PC, FIQ_Addr
+  67              	
+  68 0020 00000000 	Reset_Addr:     .word   Reset_Handler		/* defined in this module below  */
+  69 0024 90020000 	Undef_Addr:     .word   UNDEF_Routine		/* defined in main.c  */
+  70 0028 00000000 	SWI_Addr:       .word   SWI_Routine			/* defined in main.c  */
+  71 002c 90020000 	PAbt_Addr:      .word   UNDEF_Routine		/* defined in main.c  */
+  72 0030 90020000 	DAbt_Addr:      .word   UNDEF_Routine		/* defined in main.c  */
+  73 0034 00000000 	IRQ_Addr:       .word   IRQ_Routine			/* defined in main.c  */
+  74 0038 00000000 	FIQ_Addr:       .word   FIQ_Routine			/* defined in main.c  */
+  75 003c 00000000 	                .word   0					/* rounds the vectors and ISR addresses to 64 bytes total  */
+  76              	
+  77 0040 00000000 							.=.+0x1C0					/* added 2/19/2011 */
+  77      00000000 
+  77      00000000 
+  77      00000000 
+  77      00000000 
+  78              	
+  79              	# Reset Handler
+  80              	
+  81              	Reset_Handler:  
+  82              	
+  83              					/* Setup a stack for each mode - note that this only sets up a usable stack
+  84              					for User mode.   Also each mode is setup with interrupts initially disabled. */
+  85              	    			  
+  86 0200 D8009FE5 	    			ldr   r0, =_stack_end
+  87 0204 DBF021E3 	    			msr   CPSR_c, #MODE_UND|I_BIT|F_BIT 	/* Undefined Instruction Mode  */
+  88 0208 00D0A0E1 	    			mov   sp, r0
+  89 020c 040040E2 	    			sub   r0, r0, #UND_STACK_SIZE
+  90 0210 D7F021E3 	    			msr   CPSR_c, #MODE_ABT|I_BIT|F_BIT 	/* Abort Mode */
+  91 0214 00D0A0E1 	    			mov   sp, r0
+  92 0218 040040E2 	    			sub   r0, r0, #ABT_STACK_SIZE
+  93 021c D1F021E3 	    			msr   CPSR_c, #MODE_FIQ|I_BIT|F_BIT 	/* FIQ Mode */
+  94 0220 00D0A0E1 	    			mov   sp, r0	
+  95 0224 040040E2 	   				sub   r0, r0, #FIQ_STACK_SIZE
+  96 0228 D2F021E3 	    			msr   CPSR_c, #MODE_IRQ|I_BIT|F_BIT	 	/* IRQ Mode */
+  97 022c 00D0A0E1 	    			mov   sp, r0
+  98 0230 010C40E2 	    			sub   r0, r0, #IRQ_STACK_SIZE
+  99 0234 D3F021E3 	    			msr   CPSR_c, #MODE_SVC|I_BIT|F_BIT 	/* Supervisor Mode */
+ 100 0238 00D0A0E1 	    			mov   sp, r0
+ 101 023c 010C40E2 	    			sub   r0, r0, #SVC_STACK_SIZE
+ 102 0240 5FF021E3 	    			msr   CPSR_c, #MODE_SYS|F_BIT  	/* User Mode */
+ 103 0244 00D0A0E1 	    			mov   sp, r0
+ 104              	
+ 105              					/* copy .data section (Copy from ROM to RAM) */
+ 106 0248 94109FE5 	                ldr     R1, =_etext
+ 107 024c 94209FE5 	                ldr     R2, =_data
+ 108 0250 94309FE5 	                ldr     R3, =_edata
+ 109 0254 030052E1 	1:        		cmp     R2, R3
+ 110 0258 04009134 	                ldrlo   R0, [R1], #4
+ARM GAS  ../source/crt.s 			page 3
+
+
+ 111 025c 04008234 	                strlo   R0, [R2], #4
+ 112 0260 FBFFFF3A 	                blo     1b
+ 113              	
+ 114              					/* Clear .bss section (Zero init)  */
+ 115 0264 0000A0E3 	                mov     R0, #0
+ 116 0268 80109FE5 	                ldr     R1, =_bss_start
+ 117 026c 80209FE5 	                ldr     R2, =_bss_end
+ 118 0270 020051E1 	2:				cmp     R1, R2
+ 119 0274 04008134 	                strlo   R0, [R1], #4
+ 120 0278 FCFFFF3A 	                blo     2b
+ 121              	
+ 122              					/* board initialisation */
+ 123 027c FEFFFFEB 	                bl       initialise
+ 124              	
+ 125              					/* Enter the C code  */
+ 126              	                /* b       main */
+ 127              	
+ 128 0280 0000A0E3 	                mov		R0, #0
+ 129 0284 3F14A0E3 	                ldr		R1, =0x3f000000
+ 130              	
+ 131              					/* all IO as outputs */
+ 132              					#ldr     r2, =0xe0028008
+ 133              					#ldr     r3, =0xffffffff
+ 134              					#str     r3, [r2]
+ 135              	
+ 136 0288 0050A0E3 					mov     r5, #0
+ 137              	
+ 138              	# mainLoop
+ 139              	mainLoop:
+ 140              					#bl		checkETH
+ 141 028c FEFFFFEA 					b       mainLoop
+ 142              	
+ 143              	UNDEF_Routine:
+ 144 0290 FEFFFFEA 					b       UNDEF_Routine
+ 145              	
+ 146              	SWI_Routine:
+ 147 0294 FEFFFFEA 					b       SWI_Routine
+ 148              	
+ 149              	IRQ_Routine:
+ 150 0298 04E04EE2 					sub		r14, r14, #4
+ 151 029c 0F502DE9 					stmfd	r13!, {r0-r3, r12, r14}
+ 152              	
+ 153              					/* disable interrupts */
+ 154              					#ldr		r2, =0xfffff014
+ 155              					#ldr		r1, =0x00000010
+ 156              					#ldr		r1, [r2]
+ 157              	
+ 158 02a0 FEFFFFEB 					bl		tick
+ 159              	
+ 160              	                /* flash LED */
+ 161 02a4 4C209FE5 					ldr		r2, =0xe0028000
+ 162 02a8 002092E5 					ldr		r2, [r2]
+ 163 02ac 020012E3 					tst		r2, #0x00000002
+ 164 02b0 44209F05 					ldreq   r2, =0xe0028004 @// set
+ 165 02b4 44209F15 					ldrne   r2, =0xe002800c @// clr
+ 166 02b8 0240A0E3 					ldr		r4, =0x00000002
+ 167 02bc 004082E5 					str     r4, [r2]
+ARM GAS  ../source/crt.s 			page 4
+
+
+ 168              					/* end-of flash LED */
+ 169              	
+ 170              					/* reset t0ir */
+ 171 02c0 0120A0E3 					ldr		r2, =0x00000001
+ 172 02c4 38609FE5 					ldr		r6, =0xe0004000
+ 173 02c8 002086E5 					str		r2, [r6]
+ 174              	
+ 175              					/* reset vvecaddr */
+ 176 02cc 1020A0E3 					ldr		r2, =0x00000010
+ 177 02d0 30609FE5 					ldr		r6, =0xfffff030
+ 178 02d4 002086E5 					str		r2, [r6]
+ 179              	
+ 180              					/* enable interrupts */
+ 181              					#ldr		r2, =0xfffff010
+ 182              					#ldr		r1, =0x00000010
+ 183              					#ldr		r1, [r2]
+ 184              	
+ 185 02d8 0F90FDE8 					ldmfd	r13!, {r0-r3, r12, pc}^
+ 186              	
+ 187              	FIQ_Routine:
+ 188 02dc FEFFFFEA 					b       FIQ_Routine
+ 189              	
+ 190 02e0 00000000 	.end
+ 190      00000000 
+ 190      00000000 
+ 190      00000000 
+ 190      00000000 
+ARM GAS  ../source/crt.s 			page 5
+
+
+DEFINED SYMBOLS
+     ../source/crt.s:12     *ABS*:00000004 UND_STACK_SIZE
+     ../source/crt.s:13     *ABS*:00000004 ABT_STACK_SIZE
+     ../source/crt.s:14     *ABS*:00000004 FIQ_STACK_SIZE
+     ../source/crt.s:15     *ABS*:00000100 IRQ_STACK_SIZE
+     ../source/crt.s:16     *ABS*:00000100 SVC_STACK_SIZE
+     ../source/crt.s:21     *ABS*:00000010 MODE_USR
+     ../source/crt.s:22     *ABS*:00000011 MODE_FIQ
+     ../source/crt.s:23     *ABS*:00000012 MODE_IRQ
+     ../source/crt.s:24     *ABS*:00000013 MODE_SVC
+     ../source/crt.s:25     *ABS*:00000017 MODE_ABT
+     ../source/crt.s:26     *ABS*:0000001b MODE_UND
+     ../source/crt.s:27     *ABS*:0000001f MODE_SYS
+     ../source/crt.s:29     *ABS*:00000080 I_BIT
+     ../source/crt.s:30     *ABS*:00000040 F_BIT
+     ../source/crt.s:149    .text:00000298 IRQ_Routine
+     ../source/crt.s:187    .text:000002dc FIQ_Routine
+     ../source/crt.s:146    .text:00000294 SWI_Routine
+     ../source/crt.s:81     .text:00000200 Reset_Handler
+     ../source/crt.s:54     .text:00000000 _startup
+     ../source/crt.s:58     .text:00000000 _vectors
+     ../source/crt.s:58     .text:00000000 $a
+     ../source/crt.s:68     .text:00000020 Reset_Addr
+     ../source/crt.s:69     .text:00000024 Undef_Addr
+     ../source/crt.s:70     .text:00000028 SWI_Addr
+     ../source/crt.s:71     .text:0000002c PAbt_Addr
+     ../source/crt.s:72     .text:00000030 DAbt_Addr
+     ../source/crt.s:73     .text:00000034 IRQ_Addr
+     ../source/crt.s:74     .text:00000038 FIQ_Addr
+     ../source/crt.s:68     .text:00000020 $d
+     ../source/crt.s:143    .text:00000290 UNDEF_Routine
+     ../source/crt.s:86     .text:00000200 $a
+     ../source/crt.s:139    .text:0000028c mainLoop
+     ../source/crt.s:190    .text:000002e0 $d
+
+UNDEFINED SYMBOLS
+_stack_end
+_etext
+_data
+_edata
+_bss_start
+_bss_end
+initialise
+tick

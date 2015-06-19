@@ -1,0 +1,38 @@
+ARM GAS  ../../Common/source/IAP.s 			page 1
+
+
+   1              	.text
+   2              	
+   3              	.global IAPRead
+   4              	.global jump_to_IAP
+   5              	
+   6              	.set IAP_ENTRY, 0x7ffffff1
+   7              	
+   8              	
+   9              	IAPRead:
+  10 0000 07402DE9 	 STMFD	SP!, {R0-R2, R14}
+  11              	
+  12 0004 3620A0E3 	 MOV	R2, #0X36
+  13 0008 002080E5 	 STR	R2, [R0]
+  14              	
+  15 000c FEFFFFEB 	 BL	jump_to_IAP
+  16              	
+  17 0010 0740BDE8 	 LDMFD	SP!, {R0-R2, R14}
+  18 0014 0EF0A0E1 	 MOV PC, LR
+  19              	
+  20              	jump_to_IAP:
+  21 0018 3AC1E0E3 	 LDR R12, =IAP_ENTRY
+  22              	
+  23 001c 1CFF2FE1 	 BX R12
+  24              	
+  25              	 .end
+ARM GAS  ../../Common/source/IAP.s 			page 2
+
+
+DEFINED SYMBOLS
+../../Common/source/IAP.s:9      .text:00000000 IAPRead
+../../Common/source/IAP.s:20     .text:00000018 jump_to_IAP
+../../Common/source/IAP.s:6      *ABS*:7ffffff1 IAP_ENTRY
+../../Common/source/IAP.s:10     .text:00000000 $a
+
+NO UNDEFINED SYMBOLS
